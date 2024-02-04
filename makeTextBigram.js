@@ -1,23 +1,17 @@
-/** Command-line tool to generate Markov text. */
-
+/** Command-line tool to generate bigram Markov text. */
 
 const fs = require("fs");
-const markov = require("./markov");
+const markov = require("./bigram");
 const axios = require("axios");
 const process = require("process");
 
-
 /** Make Markov machine from text and generate text from it. */
-
 function generateText(text) {
   let mm = new markov.MarkovMachine(text);
   console.log(mm.makeText());
-  return mm.makeText();
 }
 
-
-/** read file and generate text from it. */
-
+/** Read file and generate text from it. */
 function makeText(path) {
   fs.readFile(path, "utf8", function cb(err, data) {
     if (err) {
@@ -27,13 +21,9 @@ function makeText(path) {
       generateText(data);
     }
   });
-
 }
 
-
-/** read URL and make text from it. */
-
-
+/** Read URL and make text from it. */
 async function makeURLText(url) {
   let resp;
 
@@ -43,28 +33,16 @@ async function makeURLText(url) {
     console.error(`Cannot read URL: ${url}: ${err}`);
     process.exit(1);
   }
-  generateText(resp.data)
+
+  generateText(resp.data);
 }
 
-
-/** interpret cmdline to decide what to do. */
-
+/** Interpret cmdline to decide what to do. */
 let [method, path] = process.argv.slice(2);
 
-if (process.argv.length < 4) {
-	console.error("Usage: node yourScript.js [file|url] path_or_url");
-	process.exit(1);
-  }
-
-if (method === "file") {
+if (method === "file" || method === "url") {
   makeText(path);
-}
-
-else if (method === "url") {
-  makeURLText(path);
-}
-
-else {
-  console.error(`Unknown method: ${method}`);
+} else {
+  console.error("Usage: node yourScript.js [file|url] path_or_url");
   process.exit(1);
 }
